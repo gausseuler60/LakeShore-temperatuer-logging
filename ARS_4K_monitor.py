@@ -14,7 +14,7 @@ TRAY_ICON = 'Monitor.ico'
 
 log_file_name = 'Temperature.log'
 auth_file_name = 'overseer_auth.dat'
-temp_buffer_size = 10
+temp_buffer_size = 12
 
 
 def ensure_logging_directories():
@@ -59,10 +59,11 @@ def scan_temperatures(device: LakeShore335):
 
 def logging_thread_proc():
     ls = LakeShore335(device_num=12, control_channel='A', heater_channel=1, mode='passive')
-    overseer_authorize(ls)
 
     temp_A, temp_B = scan_temperatures(ls)
     perform_logging_record(temp_A, temp_B)
+
+    overseer_authorize(ls)
 
     time_start = time.time()
     while not event_exit.is_set():

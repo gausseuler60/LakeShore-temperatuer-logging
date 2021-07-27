@@ -45,7 +45,7 @@ class ARS_4K_slave(Slave):
 
         message = f'Temperatures:\n✔Channel A: {temp_A:.3f} K\n✔Channel B: {temp_B:.3f}K'
 
-        final = status + '\n' + message
+        final = '\n' + status + '\n\n' + message
 
         return final
 
