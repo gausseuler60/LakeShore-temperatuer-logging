@@ -35,15 +35,15 @@ class ARS_4K_slave(Slave):
             rng = np.linspace(0, n_frozen_temps, n_frozen_temps)
             temps_approx_k = np.polyfit(rng, frozen_temps, deg=1)[0]
             if temps_approx_k > 0:
-                status = 'Warming'
+                status = '🔴Warming'
             else:
-                status = 'Cooling'
+                status = '🟢Cooling'
             if abs(self._temps_A[-1] - self._temps_A[0]) < 0.2:
-                status = 'Approx. stable'
+                status = '🔵Approx. stable'
         else:
             status = 'Gathering statistics...'
 
-        message = f'Temperatures:\nChannel A: {temp_A:.3f} K\nChannel B: {temp_B:.3f}K'
+        message = f'Temperatures:\n✔Channel A: {temp_A:.3f} K\n✔Channel B: {temp_B:.3f}K'
 
         final = status + '\n' + message
 
