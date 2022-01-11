@@ -9,9 +9,10 @@ LAKESHORE_MODEL_335 = 1
 
 
 class ARS_4K_slave(Slave):
-    def __init__(self, nickname, password, server_address, server_port, temp_list_A, temp_list_B, temp_buffer_size):
+    def __init__(self, nickname, password, server_address, server_port, temp_list_A, temp_list_B, temp_buffer_size, pressure):
         self._temps_A = temp_list_A
         self._temps_B = temp_list_B
+        self._pressure = pressure
         self._buffer_size = temp_buffer_size
         self._xaxis = np.linspace(1, self._buffer_size, self._buffer_size)
         # self._last_event_check_time = datetime.now()
@@ -44,6 +45,10 @@ class ARS_4K_slave(Slave):
             status = 'Gathering statistics...'
 
         message = f'Temperatures:\n✔Channel A: {temp_A:.3f} K\n✔Channel B: {temp_B:.3f}K'
+        
+        press = self._pressure[0]
+        if press is not None:
+            message += f'\n\n Pressure:\n {press} mBar'
 
         final = '\n' + status + '\n\n' + message
 
