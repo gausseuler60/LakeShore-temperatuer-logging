@@ -1,5 +1,6 @@
 import numpy as np
 from copy import copy
+import math
 
 from slave import Slave
 from Drivers.LakeShore335 import LakeShore335
@@ -21,7 +22,24 @@ class ARS_4K_slave(Slave):
     # def generate_alert_messages(self):
     # TODO: maybe add messages about some events
     #     return []
-
+    
+    @staticmethod   
+    def _format_unicode_sci(number):
+        try:
+            exponent = int(round(math.log10(abs(number))))
+            mantis = number / 10 ** exponent
+            
+            sup = str.maketrans("-0123456789", "⁻⁰¹²³⁴⁵⁶⁷⁸⁹")
+            
+            # format like it is shown on a sensor
+            if mantis < 1:
+                mantis *= 10
+                exponent -= 1
+                
+            return f"{mantis:.2f}·10{str(exponent).translate(sup)}"
+        except Exception:
+            return str(number)   
+       
     def generate_info_message(self):
         if len(self._temps_A) == 0:
             return "Please wait, loading..."
@@ -45,11 +63,10 @@ class ARS_4K_slave(Slave):
             status = 'Gathering statistics...'
 
         message = f'Temperatures:\n✔Channel A: {temp_A:.3f} K\n✔Channel B: {temp_B:.3f}K'
-        
         press = self._pressure[0]
-        if press is not None:
-            message += f'\n\n Pressure:\n {press} mBar'
 
+        if press is not None:
+            message += f'\n\n Pressure:\n {self._format_unicode_sci(press)} mBar'
         final = '\n' + status + '\n\n' + message
 
         return final

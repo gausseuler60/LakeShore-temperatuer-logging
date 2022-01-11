@@ -53,8 +53,10 @@ def perform_logging_record(temp_A, temp_B, pressure):
     time_to_write = time.strftime('%H-%M-%S')
     with open(current_temp_logging_file, 'a') as f:
         f.write(f'{time_to_write} {temp_A} {temp_B}\n')
-    with open(current_press_logging_file, 'a') as f:
-        f.write(f'{time_to_write} {pressure}\n')
+        
+    if not (pressure is None):
+        with open(current_press_logging_file, 'a') as f:
+            f.write(f'{time_to_write} {pressure}\n')
 
 
 def scan_temperatures(device: LakeShore335):
@@ -74,13 +76,16 @@ def scan_pressure():
         return press
     except Exception as e:
         press_sensor_enabled = False
-        print('Pressure sensor connection was lost')
+        pressure_val[0] = None
         print(e)
+        print('Pressure sensor connection was lost')
         return None
 
 
 def try_press_sensor():
     global press_sensor, press_sensor_enabled
+    if not press_sensor_enabled:
+        return
     try:
         press_sensor = ThyracontVSM(device_num=1)
         press_sensor = press_sensor
@@ -105,9 +110,11 @@ def logging_thread_proc():
     while not event_exit.is_set():
         time_now = time.time()
         temp_A, temp_B = scan_temperatures(ls)
+        press = scan_pressure()
         if time_now - time_start >= 30:
             check_day_change()
-            perform_logging_record(temp_A, temp_B)
+            
+            perform_logging_record(temp_A, temp_B, press)
             time_start = time_now
         time.sleep(5)
         
@@ -182,6 +189,7 @@ last_temps_B = []
 pressure_val = [None]
 
 current_temp_logging_file = path.join(ensure_logging_directories(), temp_log_file_name)
+current_press_logging_file = path.join(ensure_logging_directories(), press_log_file_name)
 event_exit = threading.Event()
 log_thread = threading.Thread(target=logging_thread_proc)
 log_thread.start()

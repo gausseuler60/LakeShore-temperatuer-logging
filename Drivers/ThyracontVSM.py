@@ -26,11 +26,10 @@ class ThyracontVSM:
     def read_pressure(self):
         num = self.device_num
  
-        read_str = self._read_and_write_cmd(f'{num:03d}0MV00', 16)
-        
+        read_str = self._read_and_write_cmd(f'{num:03d}0MV00', 22)
         if not read_str.startswith(f'{num:03d}1MV'):
             raise ValueError('Device returned an invalid answer')
-        
+           
         length = int(read_str[6:8])
         press = read_str[8:8+length]
         return float(press)
