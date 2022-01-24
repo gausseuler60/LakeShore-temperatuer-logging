@@ -31,7 +31,7 @@ def ensure_logging_directories():
 
 
 def check_day_change():
-    global current_temp_logging_file
+    global current_temp_logging_file, current_press_logging_file
     now = time.localtime()
     hours = now.tm_hour
     minutes = now.tm_min
@@ -70,6 +70,10 @@ def scan_temperatures(device: LakeShore335):
 
 def scan_pressure():
     global press_sensor, press_sensor_enabled
+    if not press_sensor_enabled:
+        pressure_val[0] = None
+        return None
+        
     try:
         press = press_sensor.read_pressure()
         pressure_val[0] = press
@@ -84,8 +88,6 @@ def scan_pressure():
 
 def try_press_sensor():
     global press_sensor, press_sensor_enabled
-    if not press_sensor_enabled:
-        return
     try:
         press_sensor = ThyracontVSM(device_num=1)
         press_sensor = press_sensor
