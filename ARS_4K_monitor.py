@@ -73,10 +73,6 @@ def scan_pressure():
     if not press_sensor_enabled:
         pressure_val[0] = None
         return None
-        
-=======
-        return None
->>>>>>> Stashed changes
     try:
         press = press_sensor.read_pressure()
         pressure_val[0] = press
@@ -89,11 +85,7 @@ def scan_pressure():
 
 
 def try_press_sensor():
-<<<<<<< Updated upstream
-    global press_sensor, press_sensor_enabled
-=======
     global press_sensor, press_sensor_enabled, pressure_val
->>>>>>> Stashed changes
     try:
         press_sensor = ThyracontVSM(device_num=1)
         press_sensor_enabled = True
