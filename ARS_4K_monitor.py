@@ -17,10 +17,10 @@ temp_log_file_name = 'Temperature.log'
 press_log_file_name = 'Pressure.log'
 auth_file_name = 'overseer_auth.dat'
 temp_buffer_size = 12
-current_temp_logging_file = ''
-current_press_logging_file = ''
 
+press_sensor = None
 press_sensor_enabled = True
+
 
 def ensure_logging_directories():
     current_date = time.strftime('%Y-%m-%d')
@@ -74,23 +74,28 @@ def scan_pressure():
         pressure_val[0] = None
         return None
         
+=======
+        return None
+>>>>>>> Stashed changes
     try:
         press = press_sensor.read_pressure()
         pressure_val[0] = press
         return press
-    except Exception as e:
+    except Exception:
         press_sensor_enabled = False
         pressure_val[0] = None
-        print(e)
         print('Pressure sensor connection was lost')
         return None
 
 
 def try_press_sensor():
+<<<<<<< Updated upstream
     global press_sensor, press_sensor_enabled
+=======
+    global press_sensor, press_sensor_enabled, pressure_val
+>>>>>>> Stashed changes
     try:
         press_sensor = ThyracontVSM(device_num=1)
-        press_sensor = press_sensor
         press_sensor_enabled = True
     except ValueError:
         press_sensor_enabled = False
@@ -106,7 +111,7 @@ def logging_thread_proc():
     press = scan_pressure()
     perform_logging_record(temp_A, temp_B, press)
 
-    overseer_authorize(ls)
+    overseer_authorize()
 
     time_start = time.time()
     while not event_exit.is_set():
@@ -145,18 +150,19 @@ def get_bot_login_password():
                 elif i == 1:
                     password = line.strip()
         return login, password
-    except Exception as e:
+    except Exception:
         print('Cannot authorize in Overseer bot, invalid credentials file')
         return "", ""
 
 
-def overseer_authorize(lakeshore):
+def overseer_authorize():
     login, password = get_bot_login_password()
     if len(login) == 0:
         return
     bot = ARS_4K_slave(login, password, 'triangle.enricherclub.com', 23137,
                        last_temps_A, last_temps_B, temp_buffer_size, pressure_val)
     bot.launch()
+
 
 class TaskBarIcon(wx.adv.TaskBarIcon):
     def __init__(self):
@@ -201,4 +207,3 @@ app = wx.App()
 TaskBarIcon()
 app.MainLoop()
 event_exit.set()
-
