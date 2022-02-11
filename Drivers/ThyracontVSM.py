@@ -14,11 +14,16 @@ class ThyracontVSM:
         
         data = bytearray(str_cmd.encode())
         
-        device = self.device
-        device.write(data)
+        while True:
+            try:
+                device = self.device
+                device.write(data)
         
-        inp = device.read(length_read)
-        return inp.decode()
+                inp = device.read(length_read)
+                return inp.decode()
+            except UnicodeDecodeError:
+                pass  # try again
+            
         
     def read_name(self):
         return self._read_and_write_cmd('0010PN00', 20)
